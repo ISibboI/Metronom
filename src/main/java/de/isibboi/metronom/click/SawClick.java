@@ -7,6 +7,6 @@ public class SawClick extends MetronomClick {
 
 	@Override
 	protected float createSample(float positionInWave, float positionInLine) {
-		return positionInWave * (1 - positionInLine);
+		return (positionInWave * 2 - 1) * (1 - positionInLine);
 	}
 }
