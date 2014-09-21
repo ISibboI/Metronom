@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class MetronomLine {
+import de.isibboi.metronom.click.MetronomClick;
+
+public class MetronomPattern {
 	private class Click implements Comparable<Click> {
-		private boolean high;
-		private float position;
+		private final boolean high;
+		private final float position;
 
 		public Click(boolean high, Float position) {
 			this.high = high;
@@ -25,21 +27,13 @@ public class MetronomLine {
 				return 0;
 			}
 		}
-
-		public boolean isHigh() {
-			return high;
-		}
-
-		public float getPosition() {
-			return position;
-		}
 	}
 
 	private SortedSet<Click> clicks = new TreeSet<>();
 	private float clickLength;
 	private boolean multiVoice;
 
-	public MetronomLine(List<Float> highPositions, List<Float> lowPositions,
+	public MetronomPattern(List<Float> highPositions, List<Float> lowPositions,
 			float clickLength, boolean multiVoice) {
 		for (Float position : highPositions) {
 			clicks.add(new Click(true, position));
@@ -53,7 +47,7 @@ public class MetronomLine {
 		this.multiVoice = multiVoice;
 	}
 
-	public float[] composeLine(MetronomClick high, MetronomClick low,
+	public float[] composePattern(MetronomClick high, MetronomClick low,
 			int sampleAmount) {
 		float[] line = new float[sampleAmount];
 
@@ -63,16 +57,16 @@ public class MetronomLine {
 
 		if (!clicks.isEmpty()) {
 			if (multiVoice) {
-				composeLineMultiVoiced(line, highArray, lowArray);
+				composePatternMultiVoiced(line, highArray, lowArray);
 			} else {
-				composeLineMonoVoiced(line, highArray, lowArray);
+				composePatternMonoVoiced(line, highArray, lowArray);
 			}
 		}
 
 		return line;
 	}
 
-	private void composeLineMonoVoiced(float[] line, float[] high, float[] low) {
+	private void composePatternMonoVoiced(float[] line, float[] high, float[] low) {
 		Iterator<Click> i = clicks.iterator();
 		Click current = i.next();
 		Click next = null;
@@ -93,9 +87,10 @@ public class MetronomLine {
 		}
 	}
 
-	private void composeLineMultiVoiced(float[] line, float[] high, float[] low) {
+	private void composePatternMultiVoiced(float[] line, float[] high, float[] low) {
 		for (Click click : clicks) {
-			writeSound(click.high ? high : low, line, (int)(click.position * line.length), -1);
+			writeSound(click.high ? high : low, line,
+					(int) (click.position * line.length), -1);
 		}
 	}
 

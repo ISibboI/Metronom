@@ -1,11 +1,7 @@
 package de.isibboi.metronom;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
-import java.util.Arrays;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -13,19 +9,11 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
+import de.isibboi.metronom.click.MetronomClick;
+
 public class Metronom implements Runnable {
 	public static final float SAMPLE_RATE = 44100;
 	private static final int SAMPLE_SIZE_IN_BITS = 16;
-
-	public static void main(String[] args) throws IOException {
-		Metronom m = new Metronom(60, new SawClick(880), new SawClick(440),
-				MetronomLineFactory.createQuarterLine());
-		m.start();
-
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		in.readLine();
-		m.stop();
-	}
 
 	private SourceDataLine speaker;
 	private AudioFormat audioFormat;
@@ -33,13 +21,13 @@ public class Metronom implements Runnable {
 	private int rate;
 	private MetronomClick high;
 	private MetronomClick low;
-	private MetronomLine line;
+	private MetronomPattern line;
 
 	private Thread self;
 	private volatile boolean stop;
 
 	public Metronom(int rate, MetronomClick high, MetronomClick low,
-			MetronomLine line) {
+			MetronomPattern line) {
 		try {
 			audioFormat = createAudioFormat();
 			DataLine.Info speakerInfo = new DataLine.Info(SourceDataLine.class,
@@ -76,9 +64,11 @@ public class Metronom implements Runnable {
 		stop = false;
 
 		final int sampleCount = (int) (SAMPLE_RATE * 60 * 4 / rate);
+		System.out.println(sampleCount);
+		
 		final ByteBuffer audioSamples = ByteBuffer.allocate(2 * sampleCount);
 		
-		float[] rawLine = line.composeLine(high, low, sampleCount);
+		float[] rawLine = line.composePattern(high, low, sampleCount);
 		ShortBuffer shortAudioSamples = audioSamples.asShortBuffer();
 		
 		for (float sample : rawLine) {
@@ -97,9 +87,7 @@ public class Metronom implements Runnable {
 		}
 
 		while (!stop) {
-			System.out.print("Writing " + audioSamples.array().length + " bytes... ");
 			speaker.write(audioSamples.array(), 0, audioSamples.array().length);
-			System.out.println("OK");
 		}
 		
 		speaker.stop();

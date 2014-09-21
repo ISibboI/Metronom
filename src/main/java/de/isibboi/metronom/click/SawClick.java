@@ -1,10 +1,7 @@
-package de.isibboi.metronom;
-
-import java.util.HashMap;
-import java.util.Map;
+package de.isibboi.metronom.click;
 
 public class SawClick extends MetronomClick {
-	public SawClick(float frequency) {
+	public SawClick(Float frequency) {
 		super(frequency);
 	}
 

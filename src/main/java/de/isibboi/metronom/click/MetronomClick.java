@@ -1,13 +1,15 @@
-package de.isibboi.metronom;
+package de.isibboi.metronom.click;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import de.isibboi.metronom.Metronom;
 
 public abstract class MetronomClick {
 	private final float frequency;
 	private final Map<Integer, float[]> lines = new HashMap<>();
 
-	public MetronomClick(float frequency) {
+	public MetronomClick(Float frequency) {
 		this.frequency = frequency;
 	}
 
