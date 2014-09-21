@@ -63,9 +63,7 @@ public class Metronom implements Runnable {
 	public void run() {
 		stop = false;
 
-		final int sampleCount = (int) (SAMPLE_RATE * 60 * 4 / rate);
-		System.out.println(sampleCount);
-		
+		final int sampleCount = (int) (SAMPLE_RATE * 60 * 4 / rate);		
 		final ByteBuffer audioSamples = ByteBuffer.allocate(2 * sampleCount);
 		
 		float[] rawLine = line.composePattern(high, low, sampleCount);

@@ -25,17 +25,19 @@ public abstract class MetronomClick {
 		for (int i = 0; i < line.length; i++) {
 			float time = i / Metronom.SAMPLE_RATE;
 			time *= frequency;
+			boolean attack = (int) time == 0;
 			time %= 1;
 
 			line[i] = createSample(time, ((float) i) / (line.length - 1));
 
 			// Add some attack time, and especially remove the click that is
 			// created by 0 to 1 changes within one sample.
-			if ((int) time == 0) {
+			if (attack) {
 				line[i] *= time;
 			}
 		}
 
+		postProcess(line);
 		lines.put(sampleAmount, line);
 		return line;
 	}
@@ -46,4 +48,7 @@ public abstract class MetronomClick {
 
 	protected abstract float createSample(float positionInWave,
 			float positionInLine);
+
+	protected void postProcess(float[] line) {
+	}
 }
