@@ -70,6 +70,10 @@ public class Metronom implements Runnable {
 		ShortBuffer shortAudioSamples = audioSamples.asShortBuffer();
 		
 		for (float sample : rawLine) {
+			if (Math.abs(sample) > 1) {
+				System.out.println("|" + sample + "| > 1");
+			}
+			
 			shortAudioSamples.put((short) (sample * Short.MAX_VALUE));
 		}
 		
