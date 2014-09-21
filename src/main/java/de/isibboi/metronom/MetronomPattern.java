@@ -44,7 +44,7 @@ public class MetronomPattern {
 		for (Float position : lowPositions) {
 			clicks.add(new Click(false, position));
 		}
-		
+
 		Collections.sort(clicks);
 
 		this.clickLength = clickLength;
@@ -67,10 +67,12 @@ public class MetronomPattern {
 			}
 		}
 
+		normalize(line);
 		return line;
 	}
 
-	private void composePatternMonoVoiced(float[] line, float[] high, float[] low) {
+	private void composePatternMonoVoiced(float[] line, float[] high,
+			float[] low) {
 		Iterator<Click> i = clicks.iterator();
 		Click current = i.next();
 		Click next = null;
@@ -91,23 +93,11 @@ public class MetronomPattern {
 		}
 	}
 
-	private void composePatternMultiVoiced(float[] line, float[] high, float[] low) {
+	private void composePatternMultiVoiced(float[] line, float[] high,
+			float[] low) {
 		for (Click click : clicks) {
 			writeSound(click.high ? high : low, line,
 					(int) (click.position * line.length), -1);
-		}
-		
-		float max = 0;
-		
-		for (float f : line) {
-			f = Math.abs(f);
-			if (f > max) {
-				max = f;
-			}
-		}
-		
-		for (int i = 0; i < line.length; i++) {
-			line[i] /= max;
 		}
 	}
 
@@ -116,6 +106,23 @@ public class MetronomPattern {
 				&& lineIndex != limit; sourceIndex++, lineIndex = (lineIndex + 1)
 				% line.length) {
 			line[lineIndex] += source[sourceIndex];
+		}
+	}
+
+	private void normalize(float[] line) {
+		float max = 0;
+
+		for (float f : line) {
+			f = Math.abs(f);
+			if (f > max) {
+				max = f;
+			}
+		}
+		
+		max *= 1 + 1e-3;
+
+		for (int i = 0; i < line.length; i++) {
+			line[i] /= max;
 		}
 	}
 }
