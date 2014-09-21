@@ -1,5 +1,7 @@
 package de.isibboi.metronom;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
@@ -29,7 +31,7 @@ public class MetronomPattern {
 		}
 	}
 
-	private SortedSet<Click> clicks = new TreeSet<>();
+	private List<Click> clicks = new ArrayList<>();
 	private float clickLength;
 	private boolean multiVoice;
 
@@ -42,6 +44,8 @@ public class MetronomPattern {
 		for (Float position : lowPositions) {
 			clicks.add(new Click(false, position));
 		}
+		
+		Collections.sort(clicks);
 
 		this.clickLength = clickLength;
 		this.multiVoice = multiVoice;
@@ -80,7 +84,7 @@ public class MetronomPattern {
 				next = null;
 				writeSound(current.high ? high : low, line,
 						(int) (current.position * line.length),
-						clicks.first().position);
+						clicks.get(0).position);
 			}
 
 			current = next;
@@ -92,13 +96,26 @@ public class MetronomPattern {
 			writeSound(click.high ? high : low, line,
 					(int) (click.position * line.length), -1);
 		}
+		
+		float max = 0;
+		
+		for (float f : line) {
+			f = Math.abs(f);
+			if (f > max) {
+				max = f;
+			}
+		}
+		
+		for (int i = 0; i < line.length; i++) {
+			line[i] /= max;
+		}
 	}
 
 	private void writeSound(float[] source, float[] line, int start, float limit) {
 		for (int sourceIndex = 0, lineIndex = start; sourceIndex < source.length
 				&& lineIndex != limit; sourceIndex++, lineIndex = (lineIndex + 1)
 				% line.length) {
-			line[lineIndex] = source[sourceIndex];
+			line[lineIndex] += source[sourceIndex];
 		}
 	}
 }
